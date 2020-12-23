@@ -83,7 +83,7 @@ function fillGrid() {
 				for (var n=0;n<9;n++) {
 					if (possible(i, rPos, n)) {
 						gridVals[i][rPos] = n;
-						grid.setGridVal(i,rPos,gridVals[i][rPos]);
+						grid.setVal(i,rPos,gridVals[i][rPos]);
 						break;
 					}
 				}
