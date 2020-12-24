@@ -30,17 +30,66 @@ function draw() {
 	background(255);
 	grid.show();
 	
+	addDarkLines();
+	
 	solveB.position(20, 20);
 	newB.position(20, 40);
 	modeB.position(20, 60);
 	
 }
 
+function addDarkLines() {
+	strokeWeight(3);
+	line(gStart, gStart, gEnd, gStart);
+	line(gStart, gEnd, gEnd, gEnd);
+	line(gStart, gStart+90, gEnd, gStart+90);
+	line(gStart, gStart+180, gEnd, gStart+180);
+	
+	line(gStart, gStart, gStart, gEnd);
+	line(gEnd, gStart, gEnd, gEnd);
+	line(gStart+90, gStart, gStart+90, gEnd);
+	line(gStart+180, gStart, gStart+180, gEnd);
+	strokeWeight(1);
+}
+
+function checkLegalMove(r, c, n) {
+	if (r != -1) {
+		for (var i =0; i<9; i++) {
+			if (grid.getPosition(r, i).getVal() == n || grid.getPosition(i, c).getVal() == n) {
+				return false;
+			}
+		}
+		
+		var y3 = Math.floor(r/3); //which row of the 3x3 grids are we checking
+		var x3 = Math.floor(c/3); //which column of the 3x3 grid are we checking
+		for (var i=0; i < 3; i++) {
+			for (var j=0; j < 3; j++) {
+				if (grid.getPosition(i+(3*y3),j+(3*x3)).getVal() == n) {
+					return false;
+				}			
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+function keyPressed() {
+	if (keyCode == BACKSPACE) {
+		if (grid.getSelectedP()[0] != -1) {
+			grid.setVal(grid.getSelectedP()[0],grid.getSelectedP()[1], 0);
+		}
+	}
+}
+
 function keyTyped() {
 	if (key == 1 || key == 2 || key == 3 || key == 4 || key == 5 ||
 		key == 6 || key == 7 || key == 8 || key == 9) {
+		var num = key;
 		if (grid.getSelectedP()[0] != -1) {
-			grid.setVal(grid.getSelectedP()[0],grid.getSelectedP()[1], key);
+			if (checkLegalMove(grid.getSelectedP()[0], grid.getSelectedP()[1], num)) {
+				grid.setVal(grid.getSelectedP()[0],grid.getSelectedP()[1], num);
+			}
 		}
 	}
 }
@@ -65,7 +114,7 @@ function displaySolution() {
 }
 
 function fillGrid() {
-	var numFill = 0;
+	var numFill;
 	if (mode == 0) {
 		numFill = 5;
 	}
@@ -81,9 +130,10 @@ function fillGrid() {
 			var rPos = Math.floor(Math.random() * 9);
 			if (gridVals[i][rPos] == 0) {
 				for (var n=0;n<9;n++) {
-					if (possible(i, rPos, n)) {
-						gridVals[i][rPos] = n;
-						grid.setVal(i,rPos,gridVals[i][rPos]);
+					var rNum = Math.floor((Math.random() * 9)+1);
+					if (possible(i, rPos, rNum)) {
+						gridVals[i][rPos] = rNum;
+						grid.setGridVal(i,rPos,gridVals[i][rPos]);
 						break;
 					}
 				}
@@ -93,11 +143,13 @@ function fillGrid() {
 }
 
 function setUpGridVals() {
+	gridVals = new Array(9);
 	for (var i = 0; i < 9; i++) {
 		gridVals[i] = new Array(9);
 		for (var j = 0; j < 9; j++) {
 			gridVals[i][j] = 0;
-			grid.setGridVal(i,j,gridVals[i][j]);
+			grid.resetPerms();
+			grid.setVal(i,j,gridVals[i][j]);
 			solvedBoard = null;
 		}
 	}
@@ -105,22 +157,25 @@ function setUpGridVals() {
 }
 
 function possible(r,c,n) {
-	for (var i =0; i<9; i++) {
-		if (gridVals[r][i] == n || gridVals[i][c] == n) {
-			return false;
-		}
-	}
-	
-	var y3 = Math.floor(r/3); //which row of the 3x3 grids are we checking
-	var x3 = Math.floor(c/3); //which column of the 3x3 grid are we checking
-	for (var i=0; i < 3; i++) {
-		for (var j=0; j < 3; j++) {
-			if (gridVals[i+(3*y3)][j+(3*x3)] == n) {
+	if (r != -1) {
+		for (var i =0; i<9; i++) {
+			if (gridVals[r][i] == n || gridVals[i][c] == n) {
 				return false;
-			}			
+			}
 		}
+		
+		var y3 = Math.floor(r/3); //which row of the 3x3 grids are we checking
+		var x3 = Math.floor(c/3); //which column of the 3x3 grid are we checking
+		for (var i=0; i < 3; i++) {
+			for (var j=0; j < 3; j++) {
+				if (gridVals[i+(3*y3)][j+(3*x3)] == n) {
+					return false;
+				}			
+			}
+		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 function sudokuSolve() {
@@ -152,6 +207,7 @@ function solveGame() {
 }
 
 function newGame() {
+	grid.resetPerms();
 	setUpGridVals();
 	solved = false;
 	checkGridVals = gridVals;

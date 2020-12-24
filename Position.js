@@ -10,6 +10,14 @@ class Position {
 		this.selected = false;
 	}
 	
+	getVal() {
+		return this.value;
+	}
+	
+	PVal(val) {
+		this.permVal = val;
+	}
+	
 	getPermVal() {
 		return this.permVal;
 	}
@@ -36,12 +44,22 @@ class Position {
 		stroke(0);
 		fill(255);
 		rect(this.xPos, this.yPos, this.W, this.H);
-		textSize(20);
-		fill(0);
+		
 		if (this.value > 0) {
-			text(this.value, this.xPos + 9, this.yPos + 23);
+			if (this.permVal) {
+				textSize(20);
+				fill(0);
+				text(this.value, this.xPos + 9, this.yPos + 23);
+			}
+			else {
+				textSize(20);
+				fill(0,0,255);
+				text(this.value, this.xPos + 9, this.yPos + 23);
+			}
 		}
 		else {
+			textSize(20);
+			fill(0);
 			text("", this.xPos + 9, this.yPos + 23);
 		}
 		

@@ -12,8 +12,22 @@ class Grid {
 		
 	}
 	
+	getPosition(r, c) {
+		return this.positions[r][c];
+	}
+	
+	resetPerms() {
+		for (var r=0; r<9; r++) {
+			for (var c=0; c<9; c++) {
+				this.positions[r][c].PVal(false);
+			}
+		}
+	}
+	
 	setVal(r, c, n) {
-		this.positions[r][c].setVal(n);
+		if (this.positions[r][c].getPermVal() == false) {
+			this.positions[r][c].setVal(n);
+		}
 	}
 	
 	setGridVal(r, c, n) {
