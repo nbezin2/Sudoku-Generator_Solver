@@ -11,8 +11,7 @@ var load = "";
 
 function setup() {
 	// put setup code here
-	var cnv = createCanvas(windowWidth,windowHeight);
-	cnv.style('align', 'center');
+	createCanvas(windowWidth,windowHeight);
 	gridVals = new Array(9);
 	grid = new Grid(pad); //Parameter is a padding for drawing the grid. It gets multiplied by 30
 	mode = 0;
